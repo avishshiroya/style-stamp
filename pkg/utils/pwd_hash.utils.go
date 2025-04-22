@@ -21,3 +21,9 @@ func HashPassword(p string) string {
 	return string(hash)
 }
 
+func ComparePassword(p string, h string) bool { // p -> user inputed password   h -> hashed password
+	pwd := NormalizedPassword(p)
+	hash := NormalizedPassword(h)
+	err := bcrypt.CompareHashAndPassword(hash, pwd)
+	return err == nil
+}
