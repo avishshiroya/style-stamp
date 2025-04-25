@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -46,4 +47,37 @@ func CreateRefreshToken(auth AuthDto) (string, error) {
 		return "", err
 	}
 	return tokenstring, nil
+}
+
+func VerifyAccessToken(s string) (jwt.MapClaims, error) {
+	var secretKey = []byte("83f138c1-801b-4f27-bcd6-ee0dca60d349")
+	tokens, err := jwt.Parse(s, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("invalid signing method")
+		}
+		return secretKey, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if claims, ok := tokens.Claims.(jwt.MapClaims); ok && tokens.Valid {
+		return claims, nil
+	}
+	return nil, fmt.Errorf("invalid token")
+}
+func VerifyRefreshToken(s string) (jwt.MapClaims, error) {
+	var secretKey = []byte("02608933-734C-45F7-B0F3-5CD288E36774")
+	tokens, err := jwt.Parse(s, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("invalid signing method")
+		}
+		return secretKey, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if claims, ok := tokens.Claims.(jwt.MapClaims); ok && tokens.Valid {
+		return claims, nil
+	}
+	return nil, fmt.Errorf("invalid token")
 }
